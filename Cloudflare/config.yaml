@@ -1,0 +1,51 @@
+# Cloudflare Tunnel Configuration
+# This file configures a Cloudflare tunnel for secure access to services on your Raspberry Pi
+
+# Tunnel name - can be any descriptive name you choose
+tunnel: apitunnel
+
+# Path to the credentials file (created when you ran the service install command)
+# The tunnel ID from your token is: a2b8ad88-6a72-4387-adcb-dd28173853fc
+credentials-file: /home/vasek/.cloudflared/a2b8ad88-6a72-4387-adcb-dd28173853fc.json
+
+# Origin request settings (optional - customize connection to your origin)
+originRequest:
+  # Connect timeout in seconds
+  connectTimeout: 30s
+  # Disable chunked encoding if needed
+  # noTLSVerify: false
+
+# Ingress rules define how traffic is routed
+# Rules are processed in order - first match wins
+ingress:
+  # SSH access rule
+  # Replace 'ssh.yourdomain.com' with your actual Cloudflare-managed domain
+  # This forwards SSH traffic (port 22) to your local machine
+  - hostname: ssh.contimeter.eu
+    service: ssh://localhost:22
+    # Optional: Add origin request overrides for this rule
+    # originRequest:
+    #   noTLSVerify: true
+
+  # Additional services can be added here, e.g.:
+  # - hostname: web.yourdomain.com
+  #   service: http://localhost:80
+  # - hostname: api.yourdomain.com
+  #   service: https://localhost:443
+  - hostname: ha.contimeter.eu
+    service: http://homeassistant:8123
+
+  # Catch-all rule - must be last
+  # Returns 404 for any unmatched hostnames
+  - service: http_status:404
+
+# Optional: Metrics settings
+# metrics: 127.0.0.1:8080
+
+# Optional: Log settings
+# log:
+#   level: info
+
+# Optional: WARP routing (for Cloudflare WARP clients)
+# warp-routing:
+#   enabled: true

@@ -4,7 +4,11 @@ import psycopg2
 import json
 from datetime import datetime
 
-topic = "contimeter/alej1"
+# List of topics to subscribe to. Add or remove topics as needed.
+TOPICS = [
+    "contimeter/alej1",
+    "contimeter/pve-radim"
+]
 
 STORE_MEASUREMENT_QUERY = """
     INSERT INTO ml.runtime(created, thingid, vals) VALUES(%s,%s,%s) 
@@ -16,7 +20,10 @@ def on_connect(client, userdata, flags, return_code, properties):
     try:
         if return_code == 0:
             print("connected")
-            client.subscribe(topic)
+            # subscribe to all configured topics
+            for t in TOPICS:
+                client.subscribe(t)
+                print(f"subscribed to {t}")
         else:
             print("could not connect, return code:", return_code)
             client.failed_connect = True
@@ -43,7 +50,7 @@ def send_data(connection, data):
     data_dict = json.loads(data)
     thingid = data_dict['thingid']
     data_dict.pop('thingid')
-    data_array = [datetime.utcnow(), thingid, json.dumps(data_dict), json.dumps(data_dict)]
+    data_array = [datetime.now(datetime.timezone.utc), thingid, json.dumps(data_dict), json.dumps(data_dict)]
     cursor = connection.cursor()
     cursor.execute(STORE_MEASUREMENT_QUERY, data_array)
     connection.commit()
@@ -57,7 +64,7 @@ def reconnect(client):
         time.sleep(1)
 
 
-broker_hostname ="20.215.232.231"
+broker_hostname ="mosquitto"
 port = 1883 
 parameters = {
         "host": broker_hostname,
