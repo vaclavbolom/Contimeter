@@ -102,7 +102,8 @@ if __name__ == "__main__":
     print(df.head())
     
     # Access JSONB data
+    data_columns = df.columns.to_list()[2:]
     for idx, row in df.iterrows():
         print(f"Thing {row['thingid']} - {row['created']}")
-        print(f"  Values: {row['vals']}")
+        print(f"  Values: {row[data_columns].to_dict()}")
         # Access specific properties: row['vals']['property_a']
