@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 
@@ -74,10 +74,10 @@ class TimescaleDBClient:
         
         return df
     
-    def get_last_readings(self, minutes: int = 60) -> pd.DataFrame:
+    def get_last_readings(self, minutes: int = 60, thingid: Optional[str] = None) -> pd.DataFrame:
         """Get readings from the last N minutes"""
-        start_time = datetime.now(tz=datetime.timezone.utc) - timedelta(minutes=minutes)
-        return self.get_runtime_data(start_time=start_time)
+        start_time = datetime.now(tz=timezone.utc) - timedelta(minutes=minutes)
+        return self.get_runtime_data(start_time=start_time, thingid=thingid)
     
     def get_thing_latest(self, thingid: str) -> pd.DataFrame:
         """Get latest reading for a specific thing"""
@@ -89,14 +89,15 @@ if __name__ == "__main__":
     # Set up connection with parameters
     client = TimescaleDBClient(
         host="localhost",
-        database="signaldata",
+        database="sensordata",
         user="postgres",
         password="docker",
         port=5432,
     )
     
+    thingid = 'pve-radim'
     # Get last hour of data
-    df = client.get_last_readings(minutes=60)
+    df = client.get_last_readings(minutes=60, thingid=thingid)
     print(df.head())
     
     # Access JSONB data
