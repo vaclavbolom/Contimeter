@@ -68,9 +68,10 @@ class TimescaleDBClient:
         with self.engine.connect() as connection:
             df = pd.read_sql(text(query), connection, params=params)
         
-        # Convert vals JSONB column to proper format
+        # Expand vals JSONB column into individual columns
         if not df.empty:
-            df["vals"] = df["vals"].apply(lambda x: x if isinstance(x, dict) else {})
+            vals_df = pd.json_normalize(df["vals"].apply(lambda x: x if isinstance(x, dict) else {}))
+            df = pd.concat([df.drop(columns=["vals"]), vals_df], axis=1)
         
         return df
     
