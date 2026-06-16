@@ -8,4 +8,7 @@ dependencies = [
     "paho-mqtt>=2.1.0",
     "psycopg2>=2.9.12",
     "pytest>=9.1.0",
+    "sqlalchemy>=2.0",
+    "pandas>=2.0",
+    "psycopg[binary]>=3.0",
 ]
