@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "paho-mqtt>=2.1.0",
-    "pandas>=3.0.1",
-    "psycopg2>=2.9.11",
+    "psycopg2>=2.9.12",
+    "pytest>=9.1.0",
+    "sqlalchemy>=2.0",
+    "pandas>=2.0",
+    "psycopg[binary]>=3.0",
 ]
