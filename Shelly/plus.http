@@ -1,0 +1,23 @@
+@device_ip = 192.168.8.108
+
+### Set Shelly Plus 0-10V dimmer to 50%
+# Replace `{{device_ip}}` or set the `device_ip` variable above.
+# If your device requires authentication, add an `Authorization` header below.
+GET http://{{device_ip}}/light/0?brightness=40
+Accept: application/json
+
+### Optional: curl equivalent
+# curl -X GET "http://{{device_ip}}/light/0?brightness=50" -H "Accept: application/json"
+
+###
+
+GET http://{{device_ip}}/rpc/Light.Set?id=0&on=true&brightness=30
+
+###
+GET http://{{device_ip}}/rpc/Light.GetStatus?id=0
+
+###
+GET http://{{device_ip}}/rpc/Light.GetConfig?id=0
+
+###
+GET http://{{device_ip}}/rpc/Light.Set?id=0&on=true&brightness=50
