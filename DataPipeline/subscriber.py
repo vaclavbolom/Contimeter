@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import time
 import psycopg2
 import json
+import ssl
 from datetime import datetime, timezone
 import logging
 from logger import setup_logging
@@ -93,8 +94,9 @@ def reconnect(client):
         time.sleep(1)
 
 
-broker_hostname = "127.0.0.1"
-port = 1883 
+# broker_hostname ="192.168.0.115"
+broker_hostname = "mq.contimeter.eu"
+port = 443 
 parameters = {
         "host": broker_hostname,
         "port": 5432,
@@ -105,12 +107,13 @@ parameters = {
     }
 
 
-def main():
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    # client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.failed_connect = False
+client = mqtt.Client(transport="websockets")
+client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
+client.tls_set(cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLS_CLIENT) # uncomment if you use TLS
+client.tls_insecure_set(True) # uncomment if you use TLS and want to skip certificate verification
+client.on_connect = on_connect
+client.on_message = on_message
+client.failed_connect = False
 
     reconnect(client)
 
