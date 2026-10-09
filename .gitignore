@@ -131,3 +131,6 @@ pip-log.txt
 
 ContimeterDisplay/.vs/*
 ContimeterDisplay/ContimeterDisplay/obj/
+
+# VS Code
+.vscode/*
