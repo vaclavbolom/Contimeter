@@ -10,7 +10,8 @@ from logger import setup_logging
 # List of topics to subscribe to. Add or remove topics as needed.
 TOPICS = [
     "contimeter/alej1",
-    "contimeter/pve-radim"
+    "contimeter/pve-radim",
+    "boiler/events/rpc"
 ]
 
 STORE_MEASUREMENT_QUERY = """
@@ -36,22 +37,6 @@ def on_connect(client, userdata, flags, return_code, properties):
     except Exception as e:
         logger.exception("Error: ", e)
 
-
-
-
-def on_connect(client, userdata, flags, return_code, properties):
-    try:
-        if return_code == 0:
-            logger.info(f"connected to {client._host}:{client._port}")
-            # subscribe to all configured topics
-            for t in TOPICS:
-                client.subscribe(t)
-                logger.info(f"subscribed to {t}")
-        else:
-            logger.error("could not connect, return code: %s", return_code)
-            client.failed_connect = True
-    except Exception:
-        logger.exception("Error in on_connect")
 
 
 def on_message(client, userdata, message):
