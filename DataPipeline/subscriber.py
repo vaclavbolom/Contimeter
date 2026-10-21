@@ -115,10 +115,12 @@ parameters = {
 
 def main():
     logger.info("Starting MQTT subscriber...")
-    client = mqtt.Client(transport="websockets")
-    client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
-    client.tls_set(cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLS_CLIENT) # uncomment if you use TLS
-    client.tls_insecure_set(True) # uncomment if you use TLS and want to skip certificate verification
+    # client = mqtt.Client(transport="websockets")
+    # client.tls_set(cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLS_CLIENT) # uncomment if you use TLS
+    # client.tls_insecure_set(True) # uncomment if you use TLS and want to skip certificate verification
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    # client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
+
     client.on_connect = on_connect
     client.on_message = on_message
     client.failed_connect = False
