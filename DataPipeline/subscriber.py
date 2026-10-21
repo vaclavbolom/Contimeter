@@ -3,7 +3,7 @@ import time
 import psycopg2
 import json
 import ssl
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 import logging
 from logger import setup_logging
 
@@ -46,6 +46,9 @@ def on_message(client, userdata, message):
         logger.info("Received message: %s", payload)
         decoded_message = json.loads(payload)
         logger.debug("decoded message: %s", decoded_message)
+        if ("src" in decoded_message):
+            decoded_message = extract(decoded_message)
+
         connection = connect_db(parameters)
         send_data(connection, json.dumps(decoded_message))
     except Exception:
@@ -78,6 +81,24 @@ def reconnect(client):
         logger.info("reconnecting client: %s:%s...", broker_hostname, port)
         time.sleep(1)
 
+def extract(data: str, switch: str = "switch:0") -> dict:
+    sensor_data = json.loads(data)
+    params = sensor_data["params"]
+    values = params[switch]
+
+    message = {
+        "created": datetime.fromtimestamp(params["ts"], tz=UTC),
+        "thingid": sensor_data["src"],
+        "vals": {
+            "apower": values["apower"],
+            "current": values["current"],
+            "voltage": values["voltage"],
+            "freq": values["freq"],
+        },
+    }
+    logger.debug("extracted message: %s", message)
+    return message
+
 
 # broker_hostname ="192.168.0.115"
 broker_hostname = "mq.contimeter.eu"
@@ -92,13 +113,16 @@ parameters = {
     }
 
 
-client = mqtt.Client(transport="websockets")
-client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
-client.tls_set(cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLS_CLIENT) # uncomment if you use TLS
-client.tls_insecure_set(True) # uncomment if you use TLS and want to skip certificate verification
-client.on_connect = on_connect
-client.on_message = on_message
-client.failed_connect = False
+def main():
+    logger.info("Starting MQTT subscriber...")
+    client = mqtt.Client(transport="websockets")
+    client.username_pw_set(username="broker", password="brokersecret") # uncomment if you use password auth
+    client.tls_set(cert_reqs=ssl.CERT_NONE, tls_version=ssl.PROTOCOL_TLS_CLIENT) # uncomment if you use TLS
+    client.tls_insecure_set(True) # uncomment if you use TLS and want to skip certificate verification
+    client.on_connect = on_connect
+    client.on_message = on_message
+    client.failed_connect = False
+
 
     reconnect(client)
 
