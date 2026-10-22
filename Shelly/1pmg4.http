@@ -1,0 +1,70 @@
+@device_ip = 192.168.0.136
+# Optional: uncomment and set if your device requires auth
+# @Authorization = Bearer <your_token>
+
+### Get device info
+# Returns model, hw info, firmware, MAC, and runtime data.
+GET http://{{device_ip}}/rpc/Device.GetInfo
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Get system status
+# Useful for checking uptime, network status, and device health.
+GET http://{{device_ip}}/rpc/Sys.GetStatus
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Get switch status (relay 0)
+# Includes on/off state, power, current, voltage, energy counters, and temp.
+GET http://{{device_ip}}/rpc/Switch.GetStatus?id=0
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Get switch config (relay 0)
+# Returns relay settings, name, default state, power limits, etc.
+GET http://{{device_ip}}/rpc/Switch.GetConfig?id=0
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Turn relay ON
+GET http://{{device_ip}}/rpc/Switch.Set?id=0&on=true
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Turn relay OFF
+GET http://{{device_ip}}/rpc/Switch.Set?id=0&on=false
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Toggle relay
+GET http://{{device_ip}}/rpc/Switch.Toggle?id=0
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Get WiFi status
+GET http://{{device_ip}}/rpc/WiFi.GetStatus
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Get WiFi config
+GET http://{{device_ip}}/rpc/WiFi.GetConfig
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Reboot device
+# Use this carefully; it restarts the Shelly.
+GET http://{{device_ip}}/rpc/Sys.Reboot
+Accept: application/json
+# Authorization: {{Authorization}}
+
+### Optional legacy status endpoint
+# Some Shelly devices expose a simple status response here.
+GET http://{{device_ip}}/status
+Accept: application/json
+# Authorization: {{Authorization}}
+
+###
+# Notes:
+# - Shelly Gen4 usually uses JSON-RPC endpoints under /rpc/.
+# - For authenticated devices, uncomment the Authorization header line or set it explicitly.
+# - If your device uses a different relay ID, replace `id=0` with the correct relay index.
