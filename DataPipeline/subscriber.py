@@ -93,7 +93,7 @@ def extract(sensor_data: dict, switch: str = "switch:0") -> dict:
 
     vals = {}
     for key in values:
-        if key in ["apower", "current", "voltage", "freq"]:
+        if key in ["apower", "current", "voltage", "freq", "output"]:
             vals[key] = values[key]
                 
     if vals == {}:
