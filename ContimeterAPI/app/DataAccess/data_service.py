@@ -1,9 +1,10 @@
 """Read runtime measurements from TimescaleDB into a pandas DataFrame."""
 
+import json
+from collections.abc import Mapping, Sequence
 from contextlib import closing
 from datetime import datetime
-import json
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 import pandas as pd
 import psycopg2

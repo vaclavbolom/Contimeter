@@ -6,7 +6,7 @@ import pandas as pd
 import psycopg2
 import pytest
 
-from DataPipeline import data_service
+from ContimeterAPI.app.DataAccess import data_service
 
 
 @pytest.mark.integration
