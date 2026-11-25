@@ -25,6 +25,7 @@ bool colorCycling = false;
 bool rgbEnabled = false;
 bool manualMode = false;
 bool lastButtonPressed = false;
+bool serialWasConnected = false;
 uint32_t buttonChangedAt = 0;
 uint16_t colorStep = 510;
 uint32_t colorChangedAt = 0;
@@ -211,6 +212,22 @@ ButtonGestures button(
 ButtonGestures manualButton(GESTURE_TIMING, nullptr, 0, nullptr, 0,
                             allOff, nullptr);
 
+void printStartupStatus() {
+  Serial.println("Magic wand activated");
+  Serial.println("Startup: all LEDs initialized off");
+}
+
+void updateSerial() {
+  const bool connected = static_cast<bool>(Serial);
+  if (connected && !serialWasConnected) {
+    printStartupStatus();
+  }
+  serialWasConnected = connected;
+  if (connected && Serial.available() > 0 && Serial.read() == '?') {
+    printStartupStatus();
+  }
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Activating magic wand");
@@ -222,7 +239,6 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
 
   allOff();
-  Serial.println("Magic wand activated");
 }
 
 void loop() {
@@ -265,4 +281,5 @@ void loop() {
     updateColors(now);
     updateMorse(now);
   }
+  updateSerial();
 }

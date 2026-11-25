@@ -30,6 +30,10 @@ void reset() {
   buttonPressed = false;
   lastButtonPressed = false;
   buttonChangedAt = 0;
+  serialWasConnected = false;
+  Serial.connected = true;
+  Serial.input = -1;
+  Serial.output.clear();
   colorCycling = false;
   rgbEnabled = false;
   colorStep = 510;
@@ -59,6 +63,37 @@ void testInitialColor() {
   const uint32_t end = enterDots(100, 3);
   tick(end + MORSE_SEQUENCE_GAP_MS);
   expectColor(0, 255, 0);
+}
+
+void testStartupSerial() {
+  reset();
+  serialWasConnected = false;
+  Serial.connected = false;
+  Serial.output.clear();
+  press(100);
+  tick(100 + COLOR_HOLD_MS, true);
+  assert(colorCycling);
+  assert(Serial.output.empty());
+
+  Serial.connected = true;
+  tick(100 + COLOR_HOLD_MS + 1, true);
+  assert(Serial.output.find("Magic wand activated\n") != std::string::npos);
+  assert(Serial.output.find("Startup: all LEDs initialized off\n") !=
+         std::string::npos);
+  Serial.output.clear();
+  tick(100 + COLOR_HOLD_MS + 2, true);
+  assert(Serial.output.empty());
+  Serial.input = '?';
+  tick(100 + COLOR_HOLD_MS + 3, true);
+  assert(Serial.output.find("Magic wand activated\n") != std::string::npos);
+
+  Serial.output.clear();
+  Serial.connected = false;
+  tick(100 + COLOR_HOLD_MS + 4, true);
+  Serial.connected = true;
+  tick(100 + COLOR_HOLD_MS + 5, true);
+  assert(Serial.output.find("Magic wand activated\n") != std::string::npos);
+  assert(colorCycling);
 }
 
 void testHoldThresholdsAndFreeze() {
@@ -371,6 +406,7 @@ void testExtensibleBindings() {
 
 int main() {
   testInitialColor();
+  testStartupSerial();
   testHoldThresholdsAndFreeze();
   testReleaseDebounceDoesNotExtendHold();
   testMorseTActivatesUv();
@@ -381,5 +417,5 @@ int main() {
   testManualInterruptAndTransition();
   testMillisRollover();
   testExtensibleBindings();
-  puts("11 gesture and LED behavior tests passed");
+  puts("12 gesture, LED, and serial behavior tests passed");
 }

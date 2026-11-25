@@ -3,6 +3,12 @@
 Open `sketch_magic_wand/sketch_magic_wand.ino` in Arduino IDE. Select
 **ESP32C3 Dev Module** and enable **USB CDC On Boot**.
 
+Open the Serial Monitor at 115200 baud. Startup status is printed when
+serial connects; LED control does not wait for the monitor. If the
+messages were missed, send `?` in the monitor to print them again.
+USB connection detection depends on the ESP32 and monitor, so reconnecting
+the monitor does not always trigger another message.
+
 ## Wiring
 
 The sketch uses active-HIGH outputs: UV GPIO 8, common-cathode RGB
